@@ -1,0 +1,8 @@
+numpy
+rasterio # glassbox/data/raster_io.py only
+pyyaml # glassbox/config.py only
+matplotlib # glassbox/viz.py only
+
+# tests only
+pytest
+scipy

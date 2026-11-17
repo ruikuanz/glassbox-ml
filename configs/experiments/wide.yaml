@@ -1,0 +1,8 @@
+# twice the filters in every layer
+
+project:
+  run_name: "wide"
+
+model:
+  stages: [32, 64, 128, 256]
+  head_channels: 256

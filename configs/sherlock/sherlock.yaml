@@ -1,0 +1,8 @@
+# sherlock paths: the drone_dengue data layout on group scratch
+
+paths:
+  base_path: "/scratch/groups/jrosser/drone_dengue"
+  data_folder: "data"
+  image_folder: "images"
+  mask_folder: "masks"
+  output_path: "/scratch/groups/jrosser/glassbox_ml"

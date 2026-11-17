@@ -1,0 +1,80 @@
+# base configuration; every script reads it, then merges --override files on top in order
+
+project:
+  name: "glassbox_trash_detection"
+  run_name: "baseline" # runs are written to output_path/runs_folder/run_name
+  random_seed: 0
+
+# overridden by configs/sherlock/sherlock.yaml
+paths:
+  base_path: "/path/to/drone_dengue"
+  data_folder: "data"
+  image_folder: "images"
+  mask_folder: "masks"
+  image_suffix: "_image.tif"
+  mask_suffix: "_mask.tif"
+  include_images: null # list of site names, or null for every image/mask pair
+  output_path: "/path/to/glassbox_ml"
+  dataset_folder: "datasets/all_trash"
+  runs_folder: "runs"
+
+data:
+  tile_size: 512
+  overlap: 0
+  decimation: 4 # tiles are stored at 1/decimation resolution
+  block_tiles: 8 # whole blocks of block_tiles x block_tiles tiles go to one split
+  min_blob_area: 256 # full-resolution pixels
+  min_box_side: 2.0 # stored pixels
+  connectivity: 8
+  background_sample_ratio: 0.5 # background tiles per foreground tile
+  dev_fraction: 0.1
+  test_fraction: 0.1
+
+# raw mask values not listed in label_remap are ignored (never boxed), as in drone_dengue
+classes:
+  label_remap:
+    0: 0 # background
+    1: 1 # bin
+    2: 1 # dump_lg
+    3: 1 # dump_med
+    4: 1 # mix
+    5: 1 # pile_canal
+    6: 1 # pile_sm
+    7: 1 # recycle
+    8: 1 # scatter_general
+    9: 1 # scatter_roadside
+  class_names:
+    0: "background"
+    1: "trash"
+
+model:
+  stages: [16, 32, 64, 128] # filters per conv-pool stage; each stage halves the resolution
+  head_channels: 128
+  num_anchors: 5
+
+loss:
+  lambda_obj: 1.0
+  lambda_noobj: 0.5
+  lambda_coord: 5.0
+  lambda_class: 1.0
+
+training:
+  num_epochs: 30
+  batch_size: 32
+  optimizer: "adam" # sgd, momentum, rmsprop, adam
+  learning_rate: 0.001
+  momentum_beta: 0.9
+  rmsprop_beta: 0.999
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  epsilon: 1.0e-8
+  limit_train: null # train on the first N tiles only
+
+evaluation:
+  checkpoint: "best.npz"
+  splits: ["dev", "test"]
+  score_threshold: null # null picks the best-f1 threshold on dev
+  min_score: 0.05 # detections below this are dropped before ranking
+  nms_iou: 0.5
+  iou_thresholds: [0.5, 0.3]
+  draw_count: 36

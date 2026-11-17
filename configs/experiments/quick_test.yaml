@@ -1,0 +1,12 @@
+# two epochs on 256 tiles of one site, to check the pipeline end to end
+
+project:
+  run_name: "quick_test"
+
+paths:
+  include_images: ["Kisumu_Jan2023"]
+  dataset_folder: "datasets/quick_test"
+
+training:
+  num_epochs: 2
+  limit_train: 256
